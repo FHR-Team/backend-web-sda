@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OTP_Code;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -30,12 +33,6 @@ class AuthController extends Controller
         }
 
         return $this->respondWithToken($token);
-    }
-
-    public function checkApi () {
-        return response()->json([
-            'message' => 'success'
-        ]);
     }
 
     /**
@@ -84,5 +81,31 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+    public function register(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => ['required', 'string'],
+                'email' => ['required', 'email', 'unique:users,email'],
+                'password' => ['required', 'min:6']
+            ]);
+
+            $user = User::create([
+                'name' => request('name'),
+                'email' => request('email'),
+                'password' => bcrypt($request->password),
+                'role_id' => 3
+            ]);
+
+            return response()->json([
+                'message' => 'register berhasil',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message_' => $e
+            ]);
+        }
     }
 }

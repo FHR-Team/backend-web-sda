@@ -14,7 +14,7 @@ class CreateRolesTable extends Migration
     public function up()
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->smallInteger('id')->primary();
+            $table->smallInteger('id')->autoIncrement();
             $table->enum('role', ['superadmin', 'admin', 'user']);
         });
     }
